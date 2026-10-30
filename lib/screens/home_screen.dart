@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../providers/user_providers.dart';
+import '../providers/user_provider.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -8,13 +9,22 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = UserProvider.of(context);
+    final provider = context.watch<UserProvider>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(
+              provider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            ),
+            tooltip: provider.isDarkMode ? 'Mode terang' : 'Mode gelap',
+            onPressed: provider.toggleTheme,
+          ),
+        ],
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -24,11 +34,7 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.home,
-                      size: 80,
-                      color: Colors.deepPurple,
-                    ),
+                    const Icon(Icons.home, size: 80, color: Colors.deepPurple),
                     const SizedBox(height: 24),
                     Text(
                       provider.user.isLoggedIn
@@ -40,6 +46,13 @@ class HomeScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    // << tampilan visitCount
+                    const SizedBox(height: 8),
+                    Text(
+                      'Aplikasi sudah dibuka ${provider.visitCount} kali',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                    // >> tampilan visitCount
                     const SizedBox(height: 16),
                     if (provider.user.isLoggedIn) ...[
                       Text(
